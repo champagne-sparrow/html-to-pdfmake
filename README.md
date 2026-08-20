@@ -67,15 +67,15 @@ const pdfMake = require('pdfmake/build/pdfmake');
 const pdfFonts = require('pdfmake/build/vfs_fonts');
 const htmlToPdfmake = require('html-to-pdfmake');
 // if you need to run it in a terminal console using "node", then you need the below two lines:
-const jsdom = require('jsdom');
-const { JSDOM } = jsdom;
+// const jsdom = require('jsdom');
+// const { JSDOM } = jsdom;
 
-// the below line may vary depending on your version of PDFMake
+// ATTENTION: the below line may vary depending on your version of PDFMake
 // please, check https://github.com/bpampuch/pdfmake to know how to initialize this library
 pdfMake.vfs = pdfFonts;
 
 // if you need to run it in a terminal console using "node", then you need to initiate the "window" object with the below line:
-const { window } = new JSDOM('');
+// const { window } = new JSDOM('');
 
 // Convert HTML to PDFMake format
 const html = `

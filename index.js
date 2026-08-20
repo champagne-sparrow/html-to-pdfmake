@@ -931,8 +931,8 @@ function htmlToPdfMake(htmlText, options) {
                       break;
                     }
                   }
-                  // PDFMake doesn't support "auto" as a value for "margin" (at least)
-                  if (key.indexOf("margin") === 0 && value === 'auto') break;
+                  // PDFMake only supports numbers as a value for "margin"
+                  if (key.indexOf("margin") === 0 && (parsedValue === false || isNaN(parsedValue))) break;
 
                   ret.push({key:key, value:(parsedValue === false ? value : parsedValue)});
                 }
@@ -1136,7 +1136,7 @@ function htmlToPdfMake(htmlText, options) {
     if (!isNaN(parseFloat(val)) && isFinite(val)) return val*1;
     var mtch = (val + "").trim().match(/^(-?\d*(\.\d+)?)(pt|px|r?em|cm|in)$/);
     // if we don't have a number with supported units, then return false
-    if (!mtch) return false;
+    if (mtch === null) return false;
     val = mtch[1];
     switch(mtch[3]) {
       case 'px':{
