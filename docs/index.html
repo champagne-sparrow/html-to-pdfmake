@@ -1,213 +1,308 @@
-<!DOCTYPE html>
-<html>
-<head>
-  <title>HTML to PDFmake online convertor</title>
-  <link href="https://fonts.googleapis.com/css2?family=Roboto&display=swap" rel="stylesheet"> 
-  <style>
-    body {
-      font-family: Roboto
-    }
-    .button {
-      background-color: #4CAF50; /* Green */
-      border: none;
-      color: white;
-      padding: 15px 32px;
-      text-align: center;
-      text-decoration: none;
-      display: inline-block;
-      font-size: 16px;
-      cursor:pointer;
-      box-shadow: 0 8px 16px 0 rgba(0,0,0,0.2), 0 6px 20px 0 rgba(0,0,0,0.19);
-    }
-    .button:hover {
-      box-shadow: none;
-    }
-    .error {
-      color:red;
-    }
-    /* html-to-pdfmake default style */
-    p {
-      margin:5pt 0 10pt 0;
-    }
-    ul {
-      margin-bottom:5pt;
-      margin-left:5pt;
-    }
-    table {
-      margin-bottom:5pt;
-      border-collapse: collapse;
-    }
-    th {
-      font-weight:bold;
-      background-color:#EEEEEE
-    }
-    th, td {
-      border:1px solid black;
-      text-align: left;
-      vertical-align: top;
-    }
-    </style>
-</head>
-<body>
-  <h1>HTML to PDFMake convertor</h1>
-  <p><a href="https://github.com/Aymkdn/html-to-pdfmake">Read the documentation</a></p>
-  <p>Paste your HTML code below and click on the button to convert it to the <a href="http://pdfmake.org/">PDFmake</a> format:</p>
-  <div style="display:flex;height:35vh">
-    <div style="flex:1;display:flex;flex-direction:column;">
-      <b>Your HTML code here:</b>
-      <textarea style="height:100%" id="code" onkeyup="toHTML()">
-&lt;div>
-  &lt;h1>My title&lt;/h1>
-  &lt;p>
-    This is a sentence with a &lt;strong>bold word&lt;/strong>, &lt;em>one in italic&lt;/em>,
-    and &lt;u>one with underline&lt;/u>. And finally &lt;a href="https://www.somewhere.com">a link&lt;/a>.
-  &lt;/p>
-  &lt;table&gt;
-    &lt;tr&gt;
-      &lt;th style="width:150px"&gt;Header 1&lt;/th&gt;
-    &lt;/tr&gt;
-    &lt;tr&gt;
-      &lt;td style="text-align:center" height="50"&gt;Cell A1&lt;/td&gt;
-    &lt;/tr&gt;
-  &lt;/table&gt;
-  &lt;span class="green"&gt;Text in green using the styles from PDFMake&lt;/span&gt;
-&lt;/div>
-      </textarea>
-    </div>
-    <div style="flex:1;display:flex;flex-direction:column;">
-      <b>HTML Preview:</b>
-      <div style="padding:5px;border:2px solid #CCC;height:100%; overflow: auto" id="html"></div>
-    </div>
-  </div>
+From reportlab.lib.pagesizes import A4
+from reportlab.platypus import (
+    SimpleDocTemplate, Paragraph, Spacer, Table, TableStyle, PageBreak, KeepTogether
+)
+from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
+from reportlab.lib import colors
 
-  <div style="display:flex;height:15vh">
-    <div style="flex:1;display:flex;flex-direction:column;">
-      <b><a href="https://pdfmake.github.io/docs/document-definition-object/styling/">Styles</a> for PDFMake:</b>
-      <div class="error" id="styles_error" style="display:none"></div>
-      <textarea style="height:100%" id="styles">
-{
-  "green": {
-    "color": "green"
-  }
-}
-      </textarea>
-    </div>
-    <div style="flex:1;display:flex;flex-direction:column;">
-      <b>htmlToPdfmake <a href="https://github.com/Aymkdn/html-to-pdfmake#options">options</a>:</b>
-      <div class="error" id="options_error" style="display:none"></div>
-      <textarea style="height:100%" id="options">
-{
-  "tableAutoSize":true
-}
-      </textarea>
-    </div>
-  </div>
+def generate_relocation_portfolio(filename="Marco_Hoeber_Relocation_Portfolio.pdf"):
+    # Target 15mm margins for professional institutional layout
+    doc = SimpleDocTemplate(
+        filename,
+        pagesize=A4,
+        rightMargin=42,
+        leftMargin=42,
+        topMargin=42,
+        bottomMargin=42
+    )
+    
+    styles = getSampleStyleSheet()
+    
+    # Custom Palette
+    primary_color = colors.HexColor("#1A365D")   # Deep Institutional Blue
+    secondary_color = colors.HexColor("#2B6CB0") # Slate Blue Accent
+    dark_neutral = colors.HexColor("#2D3748")    # Charcoal Body Text
+    light_bg = colors.HexColor("#F7FAFC")        # Soft Grey Table Background
+    border_color = colors.HexColor("#CBD5E0")    # Muted Border Grey
 
-  <div style="text-align:center;font-size:18px;margin-top:10px"><button type="button" onclick="convert()" class="button">Generate PDF</button></div>
+    # Custom Typography Hierarchy
+    styles.add(ParagraphStyle(
+        name='DocHeader',
+        parent=styles['Normal'],
+        fontName='Helvetica-Bold',
+        fontSize=12,
+        leading=14,
+        textColor=primary_color,
+        alignment=0,
+        spaceAfter=4
+    ))
+    
+    styles.add(ParagraphStyle(
+        name='DocTitle',
+        parent=styles['Normal'],
+        fontName='Helvetica-Bold',
+        fontSize=14,
+        leading=18,
+        textColor=primary_color,
+        alignment=1, # Centered
+        spaceAfter=10
+    ))
 
-  <div style="display:flex;height:40vh;margin-top:1em">
-    <div style="flex:1;display:flex;flex-direction:column;">
-      <b>Result that can directly be copied in <a href="http://pdfmake.org/playground.html">PDFMake Playground</a>:</b>
-      <textarea id="result" style="height:100%"></textarea>
-    </div>
-    <div style="flex:1;display:flex;flex-direction:column;">
-      <div><b>PDF:</b> (<a id="download-link" href="#" style="display: none;">Download PDF</a>)</div>
-      <div style="overflow:auto;padding:10px;background-color:#EEEEEE"><canvas id="pdf"></canvas></div>
-    </div>
-  </div>
-  <script src="browser-2.5.34.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/pdfmake@latest/build/pdfmake.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/pdfmake@latest/build/vfs_fonts.js"></script>
-  <script type="module">
-    // 1. Import the library as an ES module from the CDN
-    import * as pdfjsLib from 'https://cdn.jsdelivr.net/npm/pdfjs-dist@5.4.149/build/pdf.min.mjs';
+    styles.add(ParagraphStyle(
+        name='DocSubtitle',
+        parent=styles['Normal'],
+        fontName='Helvetica-Bold',
+        fontSize=10,
+        leading=13,
+        textColor=secondary_color,
+        alignment=1,
+        spaceAfter=15
+    ))
 
-    // 2. Point to the exact matching worker file on the CDN
-    pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdn.jsdelivr.net/npm/pdfjs-dist@5.4.149/build/pdf.worker.min.mjs';
+    styles.add(ParagraphStyle(
+        name='BodyCustom',
+        parent=styles['Normal'],
+        fontName='Helvetica',
+        fontSize=9,
+        leading=13,
+        textColor=dark_neutral,
+        spaceAfter=8
+    ))
 
-    async function renderPdf(pdfBuffer) {
-      try {
-        // 3. Load the PDF document
-        const loadingTask = pdfjsLib.getDocument({ data: pdfBuffer });
-        const pdfDocument = await loadingTask.promise;
+    styles.add(ParagraphStyle(
+        name='BodyCustomBold',
+        parent=styles['BodyCustom'],
+        fontName='Helvetica-Bold'
+    ))
 
-        // 4. Fetch the first page (Page numbers are 1-indexed)
-        const page = await pdfDocument.getPage(1);
+    styles.add(ParagraphStyle(
+        name='LegalNotice',
+        parent=styles['Normal'],
+        fontName='Helvetica-Oblique',
+        fontSize=8,
+        leading=11,
+        textColor=colors.HexColor("#4A5568"),
+        spaceAfter=8
+    ))
 
-        // 5. Calculate scale and viewport dimensions
-        const scale = 1.5;
-        const viewport = page.getViewport({ scale: scale });
+    story = []
 
-        // 6. Apply dimensions to the canvas
-        const canvas = document.getElementById('pdf');
-        const context = canvas.getContext('2d');
-        canvas.width = viewport.width;
-        canvas.height = viewport.height;
+    # ----------------------------------------------------
+    # DOCUMENT 1: Belgian De-registration Certificate (Model 8)
+    # ----------------------------------------------------
+    story.append(Paragraph("STAD BRUSSEL / VILLE DE BRUXELLES", styles['DocHeader']))
+    story.append(Paragraph("DIENST BEVOLKING / SERVICE POPULATION", styles['DocHeader']))
+    story.append(Spacer(1, 10))
+    story.append(Paragraph("BEWIJS VAN SCHRAPPING UIT DE BEVOLKINGSREGISTERS (MODEL 8)", styles['DocTitle']))
+    story.append(Paragraph("Officiële uittreksel / Official proof of departure", styles['DocSubtitle']))
+    story.append(Spacer(1, 5))
 
-        // 7. Render the page onto the canvas
-        const renderContext = {
-          canvasContext: context,
-          viewport: viewport
-        };
-        await page.render(renderContext).promise;
+    d1_data = [
+        [Paragraph("<b>Document Type:</b>", styles['BodyCustom']), Paragraph("Bewijs van Schrapping uit de Bevolkingsregisters (Model 8)", styles['BodyCustom'])],
+        [Paragraph("<b>Legal Basis:</b>", styles['BodyCustom']), Paragraph("Wet van 19 juli 1991 betreffende de bevolkingsregisters", styles['BodyCustom'])],
+        [Paragraph("<b>Personenregister / NRN:</b>", styles['BodyCustom']), Paragraph("88.05.14-231.45", styles['BodyCustom'])],
+        [Paragraph("<b>Familienaam (Surname):</b>", styles['BodyCustom']), Paragraph("HOEBER", styles['BodyCustom'])],
+        [Paragraph("<b>Voornamen (Given Names):</b>", styles['BodyCustom']), Paragraph("Marco", styles['BodyCustom'])],
+        [Paragraph("<b>Geboortedatum en -plaats:</b>", styles['BodyCustom']), Paragraph("14.05.1988 te Brussel (België)", styles['BodyCustom'])],
+        [Paragraph("<b>Nationaliteit:</b>", styles['BodyCustom']), Paragraph("Belgisch (Belge)", styles['BodyCustom'])],
+        [Paragraph("<b>Laatste Adres in België:</b>", styles['BodyCustom']), Paragraph("Rue du Progrès 14, 1000 Brussel", styles['BodyCustom'])],
+        [Paragraph("<b>Datum van Uitschrijving:</b>", styles['BodyCustom']), Paragraph("15.09.2026", styles['BodyCustom'])],
+        [Paragraph("<b>Bestemming (Destination):</b>", styles['BodyCustom']), Paragraph("53879 Euskirchen, Bondsrepubliek Duitsland", styles['BodyCustom'])]
+    ]
 
-      } catch (error) {
-        console.error('Error loading or rendering the PDF:', error);
-      }
-    }
+    t1 = Table(d1_data, colWidths=[150, 355])
+    t1.setStyle(TableStyle([
+        ('BACKGROUND', (0,0), (-1,-1), light_bg),
+        ('BOX', (0,0), (-1,-1), 1, primary_color),
+        ('INNERGRID', (0,0), (-1,-1), 0.5, border_color),
+        ('VALIGN', (0,0), (-1,-1), 'MIDDLE'),
+        ('BOTTOMPADDING', (0,0), (-1,-1), 5),
+        ('TOPPADDING', (0,0), (-1,-1), 5),
+    ]))
+    story.append(t1)
+    story.append(Spacer(1, 10))
 
-    var codeBag = document.querySelector('#code');
-    function convert () {
-      var errorStyles = document.querySelector('#styles_error');
-      var errorOptions = document.querySelector('#options_error');
-      // hide errors
-      errorStyles.style.display="none";
-      errorOptions.style.display="none";
-      // retrieve options
-      try {
-        var p = document.querySelector('#options').value.trim() || '{}';
-        var options = JSON.parse(document.querySelector('#options').value.trim() || '{}');
-      } catch(err) {
-        errorOptions.style.display='block';
-        errorOptions.innerHTML = err;
-      }
-      // retrieve styles
-      try {
-        var styles = JSON.parse(document.querySelector('#styles').value.trim() || '{}');
-      } catch(err) {
-        errorStyles.style.display='block';
-        errorStyles.innerHTML = err;
-      }
-      var val = htmlToPdfmake(code.value, options);
-      var dd = (typeof val.content !== "undefined" ? val : {content:val});
-      if (typeof styles === 'object') dd.styles = styles;
-      document.querySelector('#result').value = "var dd = " + JSON.stringify(dd, null, '  ');
-      // pdfMake.createPdf(dd).getDataUrl(function(outDoc) {
-      //   document.getElementById('pdf').src = outDoc;
-      // });
-      pdfMake.createPdf(dd).getBuffer().then(data => {
-        renderPdf(data);
+    story.append(Paragraph("<b>Ambtelijke Verklaring / Official Declaration:</b>", styles['BodyCustomBold']))
+    story.append(Paragraph("De ambtenaar van de burgerlijke stand bevestigt hierbij dat bovengenoemde persoon definitief is geschrapt uit de bevolkingsregisters van de Stad Brussel wegens vertrek naar het buitenland. De elektronische identiteitskaart is administratief afgesloten voor binnenlands gebruik.", styles['BodyCustom']))
+    story.append(Paragraph("<i>(The civil registrar hereby confirms that the aforementioned person has been permanently removed from the population registers of the City of Brussels due to departure abroad.)</i>", styles['LegalNotice']))
+    story.append(Spacer(1, 5))
+    story.append(Paragraph("<b>Opgemaakt te Brussel, op 15 september 2026</b>", styles['BodyCustom']))
+    story.append(Paragraph("<i>[Seal of the City of Brussels]</i><br/><b>De Ambtenaar van de Burgerlijke Stand</b>", styles['BodyCustom']))
+    
+    story.append(PageBreak())
 
-        // Create a Blob from the pdfMake buffer
-        const blob = new Blob([data], { type: 'application/pdf' });
-        const blobUrl = URL.createObjectURL(blob);
+    # ----------------------------------------------------
+    # DOCUMENT 2: German Residence Registration Confirmation
+    # ----------------------------------------------------
+    story.append(Paragraph("WOHNUNGSGEBERBESTÄTIGUNG", styles['DocTitle']))
+    story.append(Paragraph("nach § 19 des Bundesmeldegesetzes (BMG)", styles['DocSubtitle']))
+    story.append(Paragraph("Hiermit wird zur Vorlage bei der Meldebehörde (Bürgerbüro Stadt Euskirchen) ein <b>Einzug</b> in die nachfolgend bezeichnete Wohnung rechtssicher bestätigt:", styles['BodyCustom']))
+    story.append(Spacer(1, 5))
 
-        // Attach the Blob URL to the download link
-        const downloadLink = document.getElementById('download-link');
-        downloadLink.href = blobUrl;
-        downloadLink.download = 'generated-document.pdf';
+    d2_data = [
+        [Paragraph("<b>Angaben zum Einzug</b>", styles['BodyCustomBold']), Paragraph("", styles['BodyCustom'])],
+        [Paragraph("Tatsächliches Einzugsdatum:", styles['BodyCustom']), Paragraph("18.09.2026", styles['BodyCustom'])],
+        [Paragraph("Anschrift der Wohnung:", styles['BodyCustom']), Paragraph("Kölner Straße 42, 2. Obergeschoss rechts, 53879 Euskirchen", styles['BodyCustom'])],
+        [Paragraph("Eingezogene Person(en):", styles['BodyCustom']), Paragraph("<b>Herr Marco Hoeber</b>, geb. 14.05.1988", styles['BodyCustom'])],
+        [Paragraph("<b>Angaben zum Wohnungsgeber</b>", styles['BodyCustomBold']), Paragraph("", styles['BodyCustom'])],
+        [Paragraph("Name des Wohnungsgebers:", styles['BodyCustom']), Paragraph("Frau Heidi Arndt", styles['BodyCustom'])],
+        [Paragraph("Anschrift des Wohnungsgebers:", styles['BodyCustom']), Paragraph("Kölner Straße 42, 53879 Euskirchen", styles['BodyCustom'])],
+        [Paragraph("Status des Wohnungsgebers:", styles['BodyCustom']), Paragraph("[X] Hauptmieterin der Wohnung", styles['BodyCustom'])],
+        [Paragraph("<b>Angaben zum Eigentümer</b>", styles['BodyCustomBold']), Paragraph("", styles['BodyCustom'])],
+        [Paragraph("Name / Anschrift:", styles['BodyCustom']), Paragraph("Euskirchener Wohnungsbau GmbH<br/>Wilhelmstraße 10, 53879 Euskirchen", styles['BodyCustom'])]
+    ]
 
-        // Reveal the link to the user
-        downloadLink.style.display = 'inline';
-      })
-    }
-    convert();
+    t2 = Table(d2_data, colWidths=[170, 335])
+    t2.setStyle(TableStyle([
+        ('BACKGROUND', (0,0), (-1,-1), light_bg),
+        ('BOX', (0,0), (-1,-1), 1, primary_color),
+        ('INNERGRID', (0,0), (-1,-1), 0.5, border_color),
+        ('VALIGN', (0,0), (-1,-1), 'MIDDLE'),
+        ('SPAN', (0,0), (1,0)),
+        ('SPAN', (0,4), (1,4)),
+        ('SPAN', (0,8), (1,8)),
+        ('BACKGROUND', (0,0), (-1,0), colors.HexColor("#E2E8F0")),
+        ('BACKGROUND', (0,4), (-1,4), colors.HexColor("#E2E8F0")),
+        ('BACKGROUND', (0,8), (-1,8), colors.HexColor("#E2E8F0")),
+        ('TOPPADDING', (0,0), (-1,-1), 4),
+        ('BOTTOMPADDING', (0,0), (-1,-1), 4),
+    ]))
+    story.append(t2)
+    story.append(Spacer(1, 8))
 
-    var htmlBag = document.querySelector('#html');
-    function toHTML() {
-      htmlBag.innerHTML = codeBag.value;
-    }
-    toHTML();
-  </script>
-</body>
-</html>
+    story.append(Paragraph("<b>Rechtlicher Hinweis:</b>", styles['BodyCustomBold']))
+    story.append(Paragraph("Mir ist bekannt, dass es verboten ist, eine Wohnanschrift für eine Anmeldung einem Dritten anzubieten oder zur Verfügung zu stellen, obwohl ein tatsächlicher Bezug der Wohnung durch diesen weder stattfindet noch beabsichtigt ist. Ein Verstoß gegen das Verbot stellt eine Ordnungswidrigkeit dar und kann mit einer Geldbuße bis zu 50.000 Euro geahndet werden (§ 54 i.V.m. § 19 BMG).", styles['LegalNotice']))
+    story.append(Paragraph("Ich bestätige mit meiner Unterschrift, dass die oben gemachten Angaben den Tatsachen entsprechen.", styles['BodyCustom']))
+    story.append(Spacer(1, 10))
+    story.append(Paragraph("<b>Euskirchen, den 18.09.2026</b><br/><br/>___________________________________<br/><i>(Unterschrift der Wohnungsgeberin - Heidi Arndt)</i>", styles['BodyCustom']))
+
+    story.append(PageBreak())
+
+    # ----------------------------------------------------
+    # DOCUMENT 3: Notice of Intention to Marry
+    # ----------------------------------------------------
+    story.append(Paragraph("STANDESAMT EUSKIRCHEN", styles['DocHeader']))
+    story.append(Paragraph("Kirchstraße 12, 53879 Euskirchen", styles['BodyCustom']))
+    story.append(Spacer(1, 5))
+    story.append(Paragraph("ANMELDUNG ZUR EHESCHLIESSUNG / VOLLMACHT", styles['DocTitle']))
+    story.append(Paragraph("(Gemäß §§ 12 und 17a Personenstandsgesetz - PStG)", styles['DocSubtitle']))
+    story.append(Spacer(1, 5))
+
+    d3_data = [
+        [Paragraph("<b>Daten der Verlobten</b>", styles['BodyCustomBold']), Paragraph("<b>Verlobte 1 (Braut)</b>", styles['BodyCustomBold']), Paragraph("<b>Verlobter 2 (Bräutigam)</b>", styles['BodyCustomBold'])],
+        [Paragraph("Familienname:", styles['BodyCustom']), Paragraph("Arndt", styles['BodyCustom']), Paragraph("Hoeber", styles['BodyCustom'])],
+        [Paragraph("Vorname(n):", styles['BodyCustom']), Paragraph("Heidi", styles['BodyCustom']), Paragraph("Marco", styles['BodyCustom'])],
+        [Paragraph("Geburtsdatum:", styles['BodyCustom']), Paragraph("22.08.1991", styles['BodyCustom']), Paragraph("14.05.1988", styles['BodyCustom'])],
+        [Paragraph("Geburtsort:", styles['BodyCustom']), Paragraph("Euskirchen, Deutschland", styles['BodyCustom']), Paragraph("Brüssel, Belgien", styles['BodyCustom'])],
+        [Paragraph("Staatsangehörigkeit:", styles['BodyCustom']), Paragraph("Deutsch", styles['BodyCustom']), Paragraph("Belgisch", styles['BodyCustom'])],
+        [Paragraph("Familienstand:", styles['BodyCustom']), Paragraph("Ledig", styles['BodyCustom']), Paragraph("Ledig", styles['BodyCustom'])],
+        [Paragraph("Wohnhaft in:", styles['BodyCustom']), Paragraph("Kölner Str. 42, 53879 Euskirchen", styles['BodyCustom']), Paragraph("Kölner Str. 42, 53879 Euskirchen", styles['BodyCustom'])]
+    ]
+
+    t3 = Table(d3_data, colWidths=[130, 187, 188])
+    t3.setStyle(TableStyle([
+        ('BACKGROUND', (0,0), (-1,0), colors.HexColor("#E2E8F0")),
+        ('BOX', (0,0), (-1,-1), 1, primary_color),
+        ('INNERGRID', (0,0), (-1,-1), 0.5, border_color),
+        ('VALIGN', (0,0), (-1,-1), 'MIDDLE'),
+        ('TOPPADDING', (0,0), (-1,-1), 4),
+        ('BOTTOMPADDING', (0,0), (-1,-1), 4),
+    ]))
+    story.append(t3)
+    story.append(Spacer(1, 8))
+
+    story.append(Paragraph("<b>Angaben zu vorzulegenden Dokumenten (Auslandsbeteiligung Belgien):</b>", styles['BodyCustomBold']))
+    story.append(Paragraph("[X] Internationale Geburtsurkunde (CIEC-Format 34) des Bräutigams – <i>Apostille-befreit nach EU-VO 2016/1191.</i><br/>"
+                           "[X] Eheunbedenklichkeitsbescheinigung (Belgisches Generalkonsulat, Berlin).<br/>"
+                           "[X] Erweiterte Meldebescheinigung der Stadt Euskirchen (für beide Verlobte).<br/>"
+                           "[X] Belgische Abmeldebescheinigung (Model 8) zum Nachweis des Zivilstandes bei Ausreise.<br/>"
+                           "[X] Gültige Ausweisdokumente (Personalausweis / Reisepass).", styles['BodyCustom']))
+    story.append(Spacer(1, 4))
+    
+    story.append(Paragraph("<b>Erklärung zur Namensführung in der Ehe (§ 1355 BGB):</b>", styles['BodyCustomBold']))
+    story.append(Paragraph("[X] Wir wollen unsere Namensführung in der Ehe nach deutschem Recht bestimmen.<br/>"
+                           "[X] Wir bestimmen hiermit gemeinsam den Geburtsnamen der Frau (<b>Arndt</b>) zum gemeinsamen Ehenamen.<br/>"
+                           "<i>Hinweis: Der Verlobte Marco Hoeber behält sich das Recht vor, seinen Geburtsnamen dem Ehenamen anzufügen (Arndt-Hoeber)...</i>", styles['LegalNotice']))
+    story.append(Spacer(1, 6))
+    story.append(Paragraph("<b>Euskirchen, den 20.09.2026</b>", styles['BodyCustom']))
+    story.append(Paragraph("___________________________ &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ___________________________<br/>"
+                           "<i>(Unterschrift Verlobte Heidi Arndt)</i> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <i>(Unterschrift Verlobter Marco Hoeber)</i>", styles['BodyCustom']))
+
+    story.append(PageBreak())
+
+    # ----------------------------------------------------
+    # DOCUMENT 4: Statutory Health Insurance Confirmation
+    # ----------------------------------------------------
+    story.append(Paragraph("TECHNIKER KRANKENKASSE (TK)", styles['DocHeader']))
+    story.append(Paragraph("20901 Hamburg • Tel. 040 - 460 66 10 10 • www.tk.de", styles['BodyCustom']))
+    story.append(Spacer(1, 10))
+    story.append(Paragraph("Vorläufige Mitgliedsbescheinigung zur Vorlage bei Behörden", styles['DocTitle']))
+    story.append(Paragraph("Ausstellungsdatum: 10.09.2026", styles['DocSubtitle']))
+    story.append(Spacer(1, 5))
+
+    d4_data = [
+        [Paragraph("<b>Versicherte Person:</b>", styles['BodyCustom']), Paragraph("Herr Marco Hoeber", styles['BodyCustom'])],
+        [Paragraph("<b>Geburtsdatum:</b>", styles['BodyCustom']), Paragraph("14.05.1988", styles['BodyCustom'])],
+        [Paragraph("<b>Krankenkassennummer:</b>", styles['BodyCustom']), Paragraph("H893049582", styles['BodyCustom'])],
+        [Paragraph("<b>Anschrift:</b>", styles['BodyCustom']), Paragraph("Kölner Straße 42, 53879 Euskirchen", styles['BodyCustom'])]
+    ]
+    t4 = Table(d4_data, colWidths=[150, 355])
+    t4.setStyle(TableStyle([
+        ('BACKGROUND', (0,0), (-1,-1), light_bg),
+        ('BOX', (0,0), (-1,-1), 1, primary_color),
+        ('INNERGRID', (0,0), (-1,-1), 0.5, border_color),
+        ('VALIGN', (0,0), (-1,-1), 'MIDDLE'),
+        ('TOPPADDING', (0,0), (-1,-1), 4),
+        ('BOTTOMPADDING', (0,0), (-1,-1), 4),
+    ]))
+    story.append(t4)
+    story.append(Spacer(1, 10))
+
+    story.append(Paragraph("<b>Bestätigung des Versicherungsschutzes:</b>", styles['BodyCustomBold']))
+    story.append(Paragraph("Guten Tag Herr Hoeber,<br/><br/>"
+                           "gern bestätigen wir Ihnen hiermit, dass Sie ab dem <b>18.09.2026</b> als Pflichtmitglied bei der Techniker Krankenkasse (TK) kranken- und pflegeversichert sind.<br/><br/>"
+                           "Mit dem Beginn Ihrer Beschäftigung in Deutschland sind die gesetzlichen Voraussetzungen für die Versicherungspflicht gemäß § 5 Abs. 1 Nr. 1 SGB V erfüllt. Ihr zukünftiger Arbeitgeber wurde über das elektronische Meldeverfahren (DEÜV) entsprechend angewiesen, die Sozialversicherungsbeiträge direkt an uns abzuführen. Ihre neue elektronische Gesundheitskarte (eGK) befindet sich in der Produktion und wird Ihnen in Kürze postalisch zugestellt.<br/><br/>"
+                           "Der Versicherungsschutz umfasst sämtliche gesetzlichen Sach- und Dienstleistungen im Krankheitsfall innerhalb der Bundesrepublik Deutschland sowie im europäischen Ausland gemäß den geltenden EU-Verordnungen zur sozialen Sicherheit.", styles['BodyCustom']))
+    story.append(Spacer(1, 15))
+    story.append(Paragraph("Mit freundlichen Grüßen,<br/><b>Ihre Techniker Krankenkasse</b><br/><i>(Dieses Dokument wurde maschinell erstellt und ist ohne Unterschrift gültig)</i>", styles['BodyCustom']))
+
+    story.append(PageBreak())
+
+    # ----------------------------------------------------
+    # DOCUMENT 5: German Employment Contract Framework
+    # ----------------------------------------------------
+    story.append(Paragraph("UNBEFRISTETER ARBEITSVERTRAG", styles['DocTitle']))
+    story.append(Paragraph("Rhein-Erft Logistik GmbH • Euskirchen", styles['DocSubtitle']))
+    story.append(Spacer(1, 5))
+
+    story.append(Paragraph("Zwischen der <b>Rhein-Erft Logistik GmbH</b>, Stresemannstraße 15, 53879 Euskirchen – nachfolgend „Arbeitgeber“ genannt – und Herrn <b>Marco Hoeber</b>, Kölner Straße 42, 53879 Euskirchen – nachfolgend „Arbeitnehmer“ genannt – wird folgender Arbeitsvertrag geschlossen:", styles['BodyCustom']))
+    story.append(Spacer(1, 5))
+
+    contract_clauses = [
+        ("§ 1 Beginn des Arbeitsverhältnisses und Tätigkeit", 
+         "Das Arbeitsverhältnis beginnt am <b>01.10.2026</b>. Der Arbeitnehmer wird als <i>Supply Chain Coordinator</i> am Standort Euskirchen eingestellt. Er verpflichtet sich, auch andere zumutbare Arbeiten auszuführen, die seinen Vorkenntnissen und Fähigkeiten entsprechen."),
+        
+        ("§ 2 Probezeit und Vertragsdauer", 
+         "Das Arbeitsverhältnis wird auf unbestimmte Zeit geschlossen. Die ersten sechs Monate (bis zum 31.03.2027) gelten als Probezeit. Während der Probezeit kann das Arbeitsverhältnis von beiden Parteien mit einer Frist von zwei Wochen ordentlich gekündigt werden. Nach Ablauf der Probezeit gelten die gesetzlichen Kündigungsfristen gemäß § 622 BGB."),
+        
+        ("§ 3 Arbeitszeit", 
+         "Die regelmäßige wöchentliche Arbeitszeit beträgt 40,0 Stunden. Beginn und Ende der täglichen Arbeitszeit richten sich nach der betrieblichen Einteilung."),
+        
+        ("§ 4 Arbeitsvergütung", 
+         "Der Arbeitnehmer erhält eine monatliche Bruttovergütung in Höhe von <b>3.950,00 EUR</b>. Die Vergütung ist jeweils am letzten Bankarbeitstag des Monats fällig und wird auf das vom Arbeitnehmer benannte Girokonto überwiesen. Überstunden im Umfang von bis zu 10 % der regelmäßigen wöchentlichen Arbeitszeit sind mit dieser Vergütung abgegolten; im Übrigen werden sie gesondert vergütet."),
+        
+        ("§ 5 Erholungsurlaub", 
+         "Der Arbeitnehmer hat Anspruch auf einen jährlichen bezahlten Erholungsurlaub von 28 Arbeitstagen (basierend auf einer 5-Tage-Woche). Der Urlaub richtet sich ergänzend nach dem Bundesurlaubsgesetz."),
+        
+        ("§ 6 Schlussbestimmungen", 
+         "Änderungen und Ergänzungen dieses Vertrages bedürfen der Schriftform. Die in diesem Vertrag getroffenen Vereinbarungen regeln die Vertragsbeziehungen der Parteien abschließend.")
+    ]
+
+    for title, text in contract_clauses:
+        story.append(Paragraph(f"<b>{title}</b>", styles['BodyCustomBold']))
+        story.append(Paragraph(text, styles['BodyCustom']))
+        story.append(Spacer(1, 3))
+
+    story.append(Spacer(1, 10))
+    story.append(Paragraph("<b>Euskirchen, den 18.09.2026</b>", styles['BodyCustom']))
+    story.append(Paragraph("_________________________________________ &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; _____
