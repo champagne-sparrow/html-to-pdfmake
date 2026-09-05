@@ -1,213 +1,142 @@
-<!DOCTYPE html>
-<html>
-<head>
-  <title>HTML to PDFmake online convertor</title>
-  <link href="https://fonts.googleapis.com/css2?family=Roboto&display=swap" rel="stylesheet"> 
-  <style>
-    body {
-      font-family: Roboto
-    }
-    .button {
-      background-color: #4CAF50; /* Green */
-      border: none;
-      color: white;
-      padding: 15px 32px;
-      text-align: center;
-      text-decoration: none;
-      display: inline-block;
-      font-size: 16px;
-      cursor:pointer;
-      box-shadow: 0 8px 16px 0 rgba(0,0,0,0.2), 0 6px 20px 0 rgba(0,0,0,0.19);
-    }
-    .button:hover {
-      box-shadow: none;
-    }
-    .error {
-      color:red;
-    }
-    /* html-to-pdfmake default style */
-    p {
-      margin:5pt 0 10pt 0;
-    }
-    ul {
-      margin-bottom:5pt;
-      margin-left:5pt;
-    }
-    table {
-      margin-bottom:5pt;
-      border-collapse: collapse;
-    }
-    th {
-      font-weight:bold;
-      background-color:#EEEEEE
-    }
-    th, td {
-      border:1px solid black;
-      text-align: left;
-      vertical-align: top;
-    }
-    </style>
-</head>
-<body>
-  <h1>HTML to PDFMake convertor</h1>
-  <p><a href="https://github.com/Aymkdn/html-to-pdfmake">Read the documentation</a></p>
-  <p>Paste your HTML code below and click on the button to convert it to the <a href="http://pdfmake.org/">PDFmake</a> format:</p>
-  <div style="display:flex;height:35vh">
-    <div style="flex:1;display:flex;flex-direction:column;">
-      <b>Your HTML code here:</b>
-      <textarea style="height:100%" id="code" onkeyup="toHTML()">
-&lt;div>
-  &lt;h1>My title&lt;/h1>
-  &lt;p>
-    This is a sentence with a &lt;strong>bold word&lt;/strong>, &lt;em>one in italic&lt;/em>,
-    and &lt;u>one with underline&lt;/u>. And finally &lt;a href="https://www.somewhere.com">a link&lt;/a>.
-  &lt;/p>
-  &lt;table&gt;
-    &lt;tr&gt;
-      &lt;th style="width:150px"&gt;Header 1&lt;/th&gt;
-    &lt;/tr&gt;
-    &lt;tr&gt;
-      &lt;td style="text-align:center" height="50"&gt;Cell A1&lt;/td&gt;
-    &lt;/tr&gt;
-  &lt;/table&gt;
-  &lt;span class="green"&gt;Text in green using the styles from PDFMake&lt;/span&gt;
-&lt;/div>
-      </textarea>
-    </div>
-    <div style="flex:1;display:flex;flex-direction:column;">
-      <b>HTML Preview:</b>
-      <div style="padding:5px;border:2px solid #CCC;height:100%; overflow: auto" id="html"></div>
-    </div>
-  </div>
+var dd = {
+  pageSize: 'A4',
+  pageMargins: [42, 42, 42, 42],
+  content: [
+    // DOCUMENT 1
+    { text: 'STAD BRUSSEL / VILLE DE BRUXELLES', style: 'docHeader' },
+    { text: 'DIENST BEVOLKING / SERVICE POPULATION', style: 'docHeader' },
+    { text: '', margin: [0, 5] },
+    { text: 'BEWIJS VAN SCHRAPPING UIT DE BEVOLKINGSREGISTERS (MODEL 8)', style: 'docTitle' },
+    { text: 'Officiële uittreksel / Official proof of departure', style: 'docSubtitle' },
+    {
+      table: {
+        widths: [150, 355],
+        body: [
+          [{ text: 'Document Type:', bold: true }, 'Bewijs van Schrapping uit de Bevolkingsregisters (Model 8)'],
+          [{ text: 'Legal Basis:', bold: true }, 'Wet van 19 juli 1991 betreffende de bevolkingsregisters'],
+          [{ text: 'Personenregister / NRN:', bold: true }, '88.05.14-231.45'],
+          [{ text: 'Familienaam (Surname):', bold: true }, 'HOEBER'],
+          [{ text: 'Voornamen (Given Names):', bold: true }, 'Marco'],
+          [{ text: 'Geboortedatum en -plaats:', bold: true }, '14.05.1988 te Brussel (België)'],
+          [{ text: 'Nationaliteit:', bold: true }, 'Belgisch (Belge)'],
+          [{ text: 'Laatste Adres in België:', bold: true }, 'Rue du Progrès 14, 1000 Brussel'],
+          [{ text: 'Datum van Uitschrijving:', bold: true }, '15.09.2026'],
+          [{ text: 'Bestemming (Destination):', bold: true }, '53879 Euskirchen, Bondsrepubliek Duitsland']
+        ]
+      },
+      layout: {
+        fillColor: function (rowIndex) { return '#F7FAFC'; },
+        hLineWidth: function () { return 0.5; },
+        vLineWidth: function () { return 0.5; },
+        hLineColor: function () { return '#CBD5E0'; },
+        vLineColor: function () { return '#CBD5E0'; }
+      }
+    },
+    { text: '', margin: [0, 5] },
+    { text: 'Ambtelijke Verklaring / Official Declaration:', style: 'bodyBold' },
+    { text: 'De ambtenaar van de burgerlijke stand bevestigt hierbij dat bovengenoemde persoon definitief is geschrapt uit de bevolkingsregisters van de Stad Brussel wegens vertrek naar het buitenland. De elektronische identiteitskaart is administratief afgesloten voor binnenlands gebruik.', style: 'bodyText' },
+    { text: '(The civil registrar hereby confirms that the aforementioned person has been permanently removed from the population registers of the City of Brussels due to departure abroad.)', style: 'legalNotice' },
+    { text: 'Opgemaakt te Brussel, op 15 september 2026', style: 'bodyBold' },
+    { text: '[Seal of the City of Brussels]\nDe Ambtenaar van de Burgerlijke Stand', style: 'bodyText' },
+    
+    { text: '', pageBreak: 'after' },
 
-  <div style="display:flex;height:15vh">
-    <div style="flex:1;display:flex;flex-direction:column;">
-      <b><a href="https://pdfmake.github.io/docs/document-definition-object/styling/">Styles</a> for PDFMake:</b>
-      <div class="error" id="styles_error" style="display:none"></div>
-      <textarea style="height:100%" id="styles">
-{
-  "green": {
-    "color": "green"
+    // DOCUMENT 2
+    { text: 'WOHNUNGSGEBERBESTÄTIGUNG', style: 'docTitle' },
+    { text: 'nach § 19 des Bundesmeldegesetzes (BMG)', style: 'docSubtitle' },
+    { text: 'Hiermit wird zur Vorlage bei der Meldebehörde (Bürgerbüro Stadt Euskirchen) ein Einzug in die nachfolgend bezeichnete Wohnung rechtssicher bestätigt:', style: 'bodyText' },
+    {
+      table: {
+        widths: [170, 335],
+        body: [
+          [{ text: 'Angaben zum Einzug', colSpan: 2, bold: true, fillColor: '#E2E8F0' }, {}],
+          ['Tatsächliches Einzugsdatum:', '18.09.2026'],
+          ['Anschrift der Wohnung:', 'Kölner Straße 42, 2. Obergeschoss rechts, 53879 Euskirchen'],
+          ['Eingezogene Person(en):', { text: 'Herr Marco Hoeber, geb. 14.05.1988', bold: true }],
+          [{ text: 'Angaben zum Wohnungsgeber', colSpan: 2, bold: true, fillColor: '#E2E8F0' }, {}],
+          ['Name des Wohnungsgebers:', 'Frau Heidi Arndt'],
+          ['Anschrift des Wohnungsgebers:', 'Kölner Straße 42, 53879 Euskirchen'],
+          ['Status des Wohnungsgebers:', '[X] Hauptmieterin der Wohnung'],
+          [{ text: 'Angaben zum Eigentümer', colSpan: 2, bold: true, fillColor: '#E2E8F0' }, {}],
+          ['Name / Anschrift:', 'Euskirchener Wohnungsbau GmbH\nWilhelmstraße 10, 53879 Euskirchen']
+        ]
+      },
+      layout: {
+        hLineWidth: function () { return 0.5; },
+        vLineWidth: function () { return 0.5; },
+        hLineColor: function () { return '#CBD5E0'; },
+        vLineColor: function () { return '#CBD5E0'; }
+      }
+    },
+    { text: 'Rechtlicher Hinweis:', style: 'bodyBold' },
+    { text: 'Mir ist bekannt, dass es verboten ist, eine Wohnanschrift für eine Anmeldung einem Dritten anzubieten oder zur Verfügung zu stellen, obwohl ein tatsächlicher Bezug der Wohnung durch diesen weder stattfindet noch beabsichtigt ist.', style: 'legalNotice' },
+    { text: 'Euskirchen, den 18.09.2026\n\n___________________________________\n(Unterschrift der Wohnungsgeberin - Heidi Arndt)', style: 'bodyText' },
+
+    { text: '', pageBreak: 'after' },
+
+    // DOCUMENT 3
+    { text: 'STANDESAMT EUSKIRCHEN', style: 'docHeader' },
+    { text: 'ANMELDUNG ZUR EHESCHLIESSUNG / VOLLMACHT', style: 'docTitle' },
+    { text: '(Gemäß §§ 12 und 17a Personenstandsgesetz - PStG)', style: 'docSubtitle' },
+    {
+      table: {
+        widths: [130, 187, 188],
+        body: [
+          [{ text: 'Daten der Verlobten', bold: true, fillColor: '#E2E8F0' }, { text: 'Verlobte 1 (Braut)', bold: true, fillColor: '#E2E8F0' }, { text: 'Verlobter 2 (Bräutigam)', bold: true, fillColor: '#E2E8F0' }],
+          ['Familienname:', 'Arndt', 'Hoeber'],
+          ['Vorname(n):', 'Heidi', 'Marco'],
+          ['Geburtsdatum:', '22.08.1991', '14.05.1988'],
+          ['Geburtsort:', 'Euskirchen, Deutschland', 'Brüssel, Belgien'],
+          ['Staatsangehörigkeit:', 'Deutsch', 'Belgisch'],
+          ['Familienstand:', 'Ledig', 'Ledig'],
+          ['Wohnhaft in:', 'Kölner Str. 42, 53879 Euskirchen', 'Kölner Str. 42, 53879 Euskirchen']
+        ]
+      },
+      layout: {
+        hLineWidth: function () { return 0.5; },
+        vLineWidth: function () { return 0.5; },
+        hLineColor: function () { return '#CBD5E0'; },
+        vLineColor: function () { return '#CBD5E0'; }
+      }
+    },
+    { text: 'Euskirchen, den 20.09.2026', style: 'bodyText' },
+
+    { text: '', pageBreak: 'after' },
+
+    // DOCUMENT 4
+    { text: 'TECHNIKER KRANKENKASSE (TK)', style: 'docHeader' },
+    { text: 'Vorläufige Mitgliedsbescheinigung', style: 'docTitle' },
+    {
+      table: {
+        widths: [150, 355],
+        body: [
+          [{ text: 'Versicherte Person:', bold: true }, 'Herr Marco Hoeber'],
+          [{ text: 'Geburtsdatum:', bold: true }, '14.05.1988'],
+          [{ text: 'Krankenkassennummer:', bold: true }, 'H893049582'],
+          [{ text: 'Anschrift:', bold: true }, 'Kölner Straße 42, 53879 Euskirchen']
+        ]
+      },
+      layout: { fillColor: function () { return '#F7FAFC'; } }
+    },
+    { text: 'Bestätigung des Versicherungsschutzes:\n\nGuten Tag Herr Hoeber,\n\ngern bestätigen wir Ihnen hiermit, dass Sie ab dem 18.09.2026 als Pflichtmitglied bei der Techniker Krankenkasse (TK) kranken- und pflegeversichert sind.', style: 'bodyText' },
+
+    { text: '', pageBreak: 'after' },
+
+    // DOCUMENT 5
+    { text: 'UNBEFRISTETER ARBEITSVERTRAG', style: 'docTitle' },
+    { text: 'Rhein-Erft Logistik GmbH • Euskirchen', style: 'docSubtitle' },
+    { text: 'Zwischen der Rhein-Erft Logistik GmbH und Herrn Marco Hoeber wird folgender Arbeitsvertrag geschlossen:', style: 'bodyText' },
+    { text: '§ 1 Beginn des Arbeitsverhältnisses\nDas Arbeitsverhältnis beginnt am 01.10.2026 als Supply Chain Coordinator.', style: 'bodyText' },
+    { text: '§ 2 Probezeit\nDie ersten sechs Monate gelten als Probezeit mit einer Kündigungsfrist von zwei Wochen.', style: 'bodyText' },
+    { text: '§ 3 Arbeitsvergütung\nDer Arbeitnehmer erhält eine monatliche Bruttovergütung in Höhe von 3.950,00 EUR.', style: 'bodyText' }
+  ],
+  styles: {
+    docHeader: { fontSize: 12, bold: true, color: '#1A365D', margin: [0, 0, 0, 4] },
+    docTitle: { fontSize: 14, bold: true, color: '#1A365D', alignment: 'center', margin: [0, 5, 0, 10] },
+    docSubtitle: { fontSize: 10, bold: true, color: '#2B6CB0', alignment: 'center', margin: [0, 0, 0, 15] },
+    bodyText: { fontSize: 9, color: '#2D3748', margin: [0, 0, 0, 8] },
+    bodyBold: { fontSize: 9, bold: true, color: '#2D3748', margin: [0, 0, 0, 4] },
+    legalNotice: { fontSize: 8, italics: true, color: '#4A5568', margin: [0, 0, 0, 8] }
   }
-}
-      </textarea>
-    </div>
-    <div style="flex:1;display:flex;flex-direction:column;">
-      <b>htmlToPdfmake <a href="https://github.com/Aymkdn/html-to-pdfmake#options">options</a>:</b>
-      <div class="error" id="options_error" style="display:none"></div>
-      <textarea style="height:100%" id="options">
-{
-  "tableAutoSize":true
-}
-      </textarea>
-    </div>
-  </div>
+};
 
-  <div style="text-align:center;font-size:18px;margin-top:10px"><button type="button" onclick="convert()" class="button">Generate PDF</button></div>
-
-  <div style="display:flex;height:40vh;margin-top:1em">
-    <div style="flex:1;display:flex;flex-direction:column;">
-      <b>Result that can directly be copied in <a href="http://pdfmake.org/playground.html">PDFMake Playground</a>:</b>
-      <textarea id="result" style="height:100%"></textarea>
-    </div>
-    <div style="flex:1;display:flex;flex-direction:column;">
-      <div><b>PDF:</b> (<a id="download-link" href="#" style="display: none;">Download PDF</a>)</div>
-      <div style="overflow:auto;padding:10px;background-color:#EEEEEE"><canvas id="pdf"></canvas></div>
-    </div>
-  </div>
-  <script src="browser-2.5.34.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/pdfmake@latest/build/pdfmake.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/pdfmake@latest/build/vfs_fonts.js"></script>
-  <script type="module">
-    // 1. Import the library as an ES module from the CDN
-    import * as pdfjsLib from 'https://cdn.jsdelivr.net/npm/pdfjs-dist@5.4.149/build/pdf.min.mjs';
-
-    // 2. Point to the exact matching worker file on the CDN
-    pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdn.jsdelivr.net/npm/pdfjs-dist@5.4.149/build/pdf.worker.min.mjs';
-
-    async function renderPdf(pdfBuffer) {
-      try {
-        // 3. Load the PDF document
-        const loadingTask = pdfjsLib.getDocument({ data: pdfBuffer });
-        const pdfDocument = await loadingTask.promise;
-
-        // 4. Fetch the first page (Page numbers are 1-indexed)
-        const page = await pdfDocument.getPage(1);
-
-        // 5. Calculate scale and viewport dimensions
-        const scale = 1.5;
-        const viewport = page.getViewport({ scale: scale });
-
-        // 6. Apply dimensions to the canvas
-        const canvas = document.getElementById('pdf');
-        const context = canvas.getContext('2d');
-        canvas.width = viewport.width;
-        canvas.height = viewport.height;
-
-        // 7. Render the page onto the canvas
-        const renderContext = {
-          canvasContext: context,
-          viewport: viewport
-        };
-        await page.render(renderContext).promise;
-
-      } catch (error) {
-        console.error('Error loading or rendering the PDF:', error);
-      }
-    }
-
-    var codeBag = document.querySelector('#code');
-    function convert () {
-      var errorStyles = document.querySelector('#styles_error');
-      var errorOptions = document.querySelector('#options_error');
-      // hide errors
-      errorStyles.style.display="none";
-      errorOptions.style.display="none";
-      // retrieve options
-      try {
-        var p = document.querySelector('#options').value.trim() || '{}';
-        var options = JSON.parse(document.querySelector('#options').value.trim() || '{}');
-      } catch(err) {
-        errorOptions.style.display='block';
-        errorOptions.innerHTML = err;
-      }
-      // retrieve styles
-      try {
-        var styles = JSON.parse(document.querySelector('#styles').value.trim() || '{}');
-      } catch(err) {
-        errorStyles.style.display='block';
-        errorStyles.innerHTML = err;
-      }
-      var val = htmlToPdfmake(code.value, options);
-      var dd = (typeof val.content !== "undefined" ? val : {content:val});
-      if (typeof styles === 'object') dd.styles = styles;
-      document.querySelector('#result').value = "var dd = " + JSON.stringify(dd, null, '  ');
-      // pdfMake.createPdf(dd).getDataUrl(function(outDoc) {
-      //   document.getElementById('pdf').src = outDoc;
-      // });
-      pdfMake.createPdf(dd).getBuffer().then(data => {
-        renderPdf(data);
-
-        // Create a Blob from the pdfMake buffer
-        const blob = new Blob([data], { type: 'application/pdf' });
-        const blobUrl = URL.createObjectURL(blob);
-
-        // Attach the Blob URL to the download link
-        const downloadLink = document.getElementById('download-link');
-        downloadLink.href = blobUrl;
-        downloadLink.download = 'generated-document.pdf';
-
-        // Reveal the link to the user
-        downloadLink.style.display = 'inline';
-      })
-    }
-    convert();
-
-    var htmlBag = document.querySelector('#html');
-    function toHTML() {
-      htmlBag.innerHTML = codeBag.value;
-    }
-    toHTML();
-  </script>
-</body>
-</html>
